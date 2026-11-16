@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: casa-maderero-db
+    environment:
+      POSTGRES_USER: casa
+      POSTGRES_PASSWORD: casa
+      POSTGRES_DB: casa_maderero
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:

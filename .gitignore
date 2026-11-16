@@ -1,0 +1,20 @@
+node_modules/
+dist/
+dist-ssr/
+coverage/
+*.log
+
+# Secrets and local environment
+.env
+.env.*
+
+# Runtime data
+backend/uploads/
+
+# Local tooling
+.claude/
+.codegraph/
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store

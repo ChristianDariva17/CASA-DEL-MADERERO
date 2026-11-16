@@ -1,0 +1,54 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-sans: 'Barlow', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Barlow Condensed', 'Barlow', ui-sans-serif, sans-serif;
+
+  --color-brand: #f37a1f;
+  --color-brand-dark: #d9640d;
+  --color-ink: #2b2b2b;
+  --color-muted: #6b6b6b;
+  --color-line: #d9d9d9;
+  --color-surface: #f2f2f2;
+  --color-forest: #1f2a1c;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-white font-sans text-ink antialiased;
+  }
+}
+
+@utility container-page {
+  @apply mx-auto w-full max-w-[1200px] px-4 lg:px-0;
+}
+
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
