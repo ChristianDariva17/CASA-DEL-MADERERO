@@ -1,0 +1,63 @@
+# Production stack (Dokploy "Compose" service). Set the variables marked
+# ":?" in the Dokploy Environment tab; the deploy fails fast if one is missing.
+# Assign the domain to the "frontend" service, port 80.
+services:
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: casa
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
+      POSTGRES_DB: casa_maderero
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U casa -d casa_maderero"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    networks: [internal]
+
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: casa
+      DB_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
+      DB_NAME: casa_maderero
+      # No migrations yet: TypeORM creates and updates tables on start.
+      DB_SYNC: ${DB_SYNC:-true}
+      DB_SEED: ${DB_SEED:-true}
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET (32+ characters)}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:?Set ADMIN_EMAIL}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?Set ADMIN_PASSWORD}
+      ADMIN_NAME: ${ADMIN_NAME:-Administrador}
+      # Traefik and nginx sit in front of the API.
+      TRUST_PROXY: ${TRUST_PROXY:-2}
+      PAYMENT_PROVIDER: ${PAYMENT_PROVIDER:-simulated}
+      NODE_ENV: ${NODE_ENV:-production}
+    volumes:
+      - uploads:/app/uploads
+    networks: [internal]
+
+  frontend:
+    build: ./frontend
+    restart: unless-stopped
+    depends_on: [backend]
+    expose:
+      - "80"
+    networks: [internal, dokploy-network]
+
+volumes:
+  pgdata:
+  uploads:
+
+networks:
+  internal:
+  dokploy-network:
+    external: true
